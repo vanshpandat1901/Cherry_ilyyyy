@@ -104,7 +104,6 @@
       .controls{display:flex;gap:12px;justify-content:center}
       .btn{padding:12px 18px;border-radius:999px;border:none;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(12,8,12,0.06)}
       .yes{background:linear-gradient(180deg,#ff8db3,#ff5f8d);color:white}
-      .no{background:#fff;border:2px solid #ffdce6;color:#7a4b5d;position:relative}
 
       /* modal */
       .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
@@ -178,7 +177,7 @@
           <h3>Will you stay as my cherry forever? 🥺</h3>
           <div class="controls">
             <button id="yesBtn" class="btn yes">YES!</button>
-            <button id="noBtn" class="btn no">No</button>
+            <button id="yesBtn2" class="btn yes">YESSSS</button>
           </div>
         </section>
 
@@ -238,16 +237,6 @@
         envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' ') envelope.click()});
       }
 
-      // No button dodge
-      (function(){
-        const no = document.getElementById('noBtn'); const container = document.querySelector('.ask'); if(!no) return;
-        function moveAway(){
-          const rect = container.getBoundingClientRect(); const nx = Math.random()*(rect.width-80)+rect.left; const ny = Math.random()*(rect.height-40)+rect.top;
-          no.style.transform = `translate(${nx - no.getBoundingClientRect().left}px, ${ny - no.getBoundingClientRect().top}px)`; 
-        }
-        no.addEventListener('mouseenter', moveAway); no.addEventListener('touchstart', moveAway);
-      })();
-
       // Confetti hearts
       (function(){
         const c = document.getElementById('confetti'); if(!c) return; const ctx=c.getContext('2d'); let parts=[]; let raf=null;
@@ -258,9 +247,18 @@
         window.spawnHearts = spawn;
       })();
 
-      // Modal + yes button
-      const yes = document.getElementById('yesBtn'); const modal = document.getElementById('modal'); const close = document.getElementById('closeModal');
-      if(yes){yes.addEventListener('click', ()=>{modal.classList.add('show');modal.setAttribute('aria-hidden','false'); const cx=innerWidth/2, cy=innerHeight/3; window.spawnHearts && window.spawnHearts(cx,cy,110)})}
+      // Modal + yes buttons
+      const yes = document.getElementById('yesBtn');
+      const yes2 = document.getElementById('yesBtn2');
+      const modal = document.getElementById('modal');
+      const close = document.getElementById('closeModal');
+      function openCelebration(){
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden','false');
+        const cx = innerWidth/2, cy = innerHeight/3; window.spawnHearts && window.spawnHearts(cx,cy,110);
+      }
+      if(yes){ yes.addEventListener('click', openCelebration); }
+      if(yes2){ yes2.addEventListener('click', openCelebration); }
       if(close){close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true')})}
 
       // start typewriter
