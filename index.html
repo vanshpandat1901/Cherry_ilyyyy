@@ -14,6 +14,7 @@
         --accent:#ff6b9a;
         --accent-2:#ff9fb7;
         --shadow: 0 18px 50px rgba(16,12,20,0.09);
+        --envelope-paper: linear-gradient(180deg,#fff7f9,#fff2f6);
       }
       *{box-sizing:border-box}
       html,body{height:100%;}
@@ -45,17 +46,32 @@
       .dear{font-family:'Sacramento',cursive;font-size:1.4rem;color:#8a3560;margin-bottom:6px}
       .typed{font-size:1rem;color:#4b3442;min-height:56px}
 
-      /* envelope (SVG) */
+      /* ENVELOPE - redesigned */
       .envelope-wrap{margin-top:18px;display:flex;justify-content:center}
       .envelope{width:320px;height:200px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;cursor:pointer}
-      .env-inner{width:240px;height:140px;perspective:900px}
-      .env-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.9,.3,1)}
-      .env-front,.env-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
-      .env-front{background:linear-gradient(180deg,#fff,#fff8fb);box-shadow:0 12px 30px rgba(12,8,12,0.06)}
-      .env-back{transform:rotateX(180deg);background:linear-gradient(180deg,#ffeef6,#ffdfe8);box-shadow:inset 0 -6px 18px rgba(0,0,0,0.03)}
-      .env-flap{position:absolute;left:0;right:0;top:-28%;height:60%;transform-origin:top center;border-top-left-radius:12px;border-top-right-radius:12px;background:linear-gradient(180deg,#ffdfe8,#fff);box-shadow:0 10px 30px rgba(12,8,12,0.06)}
-      .envelope.open .env-card{transform:rotateX(18deg)}
+      .env-inner{width:260px;height:160px;perspective:1100px}
+
+      /* Card with subtle paper texture and rounded edges */
+      .env-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.9,.3,1);will-change:transform}
+      .env-front,.env-back{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;overflow:hidden}
+      .env-front{background:var(--envelope-paper);box-shadow:0 14px 40px rgba(12,8,12,0.08);border:1px solid rgba(0,0,0,0.04)}
+      .env-back{transform:rotateX(180deg);background:linear-gradient(180deg,#ffdfe8,#fff3f7);border:1px solid rgba(0,0,0,0.04)}
+
+      /* Flap updated: angled, with soft shadow and heart-seal */
+      .env-flap{position:absolute;left:0;right:0;top:-36%;height:72%;transform-origin:top center;border-top-left-radius:14px;border-top-right-radius:14px;background:linear-gradient(180deg,#ffecf2,#ffe6ef);box-shadow:0 18px 36px rgba(12,8,12,0.12);display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px}
+      .env-flap::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:92px;height:92px;background:radial-gradient(circle at 30% 30%,#fff6f9 0%,#ffd1e0 35%,#ff8db3 100%);border-radius:50%;box-shadow:0 6px 18px rgba(0,0,0,0.12);display:block}
+
+      /* Heart seal (SVG) positioned over the flap's pseudo-element */
+      .env-seal{position:absolute;left:50%;transform:translateX(-50%) translateY(-6px);bottom:28px;width:56px;height:56px;z-index:6;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .45s ease;}
+      .env-seal svg{width:48px;height:48px;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.14));}
+
+      /* When open: tilt card and flip flap, seal wiggles */
+      .envelope.open .env-card{transform:rotateX(20deg) translateY(-8px)}
       .envelope.open .env-flap{transform:rotateX(180deg)}
+      .envelope.open .env-seal{transform:translateX(-50%) translateY(-6px) scale(0.85) rotate(-10deg);}
+
+      /* little hover/press feedback */
+      .envelope:active .env-card{transform:translateY(2px) scale(0.995)}
 
       /* polaroid gallery (modal) */
       .gallery-modal-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
@@ -112,6 +128,12 @@
                 <div class="env-back"></div>
                 <div class="env-front"> <div style="pointer-events:none">💌</div></div>
                 <div class="env-flap"></div>
+                <div class="env-seal" aria-hidden="true">
+                  <!-- heart SVG seal -->
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 20s-6.5-4.35-9-7.1C-0.5 9.65 3 4 7 6.5 9 8 12 12 12 12s3-4 5-5.5c4-2.5 7.5 3.15 4 6.4C18.5 15.65 12 20 12 20z" fill="#ff5f8d" opacity="0.98" />
+                  </svg>
+                </div>
               </div>
             </div>
           </button>
@@ -209,6 +231,7 @@
       const modalText = document.getElementById('modalText');
       const modalFallback = document.getElementById('modalFallback');
       const close = document.getElementById('closeModal');
+      const seal = document.querySelector('.env-seal');
 
       function openModalAsGallery(){
         modalTitle.textContent = 'A little surprise for you 💌';
@@ -239,6 +262,16 @@
         }, 900);
 
         modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+
+        // small seal pulse to celebrate
+        if(seal){
+          seal.animate([
+            { transform: 'translateX(-50%) translateY(-6px) scale(1) rotate(0deg)' },
+            { transform: 'translateX(-50%) translateY(-6px) scale(1.08) rotate(6deg)' },
+            { transform: 'translateX(-50%) translateY(-6px) scale(1) rotate(-4deg)' },
+            { transform: 'translateX(-50%) translateY(-6px) scale(1) rotate(0deg)' }
+          ], { duration: 700, easing: 'ease-out' });
+        }
       }
 
       if(envelope){
