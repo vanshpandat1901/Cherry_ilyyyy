@@ -82,6 +82,7 @@
       .polaroid img{width:100%;display:block;border-radius:6px}
       .caption{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:8px}
       .polaroid .tape{position:absolute;left:50%;transform:translateX(-50%);top:-8px;width:56px;height:14px;background:linear-gradient(90deg,#fff1f6,#ffeef2);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+      .gallery-controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:8px}
 
       @media(min-width:720px){.polaroid{width:calc(25% - 9px)}}
 
@@ -116,6 +117,7 @@
       @media (max-width:480px){
         .cover{height:44vh;min-height:220px}
         .cover h1{font-size:1.7rem}
+        .polaroid{width:100%}
       }
     </style>
   </head>
@@ -142,26 +144,14 @@
         </section>
 
         <section class="gallery" aria-label="Polaroid gallery">
-          <div class="polaroid" tabindex="0">
-            <div class="tape"></div>
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=111" alt="polaroid 1">
-            <div class="caption">Our first coffee</div>
+          <div class="gallery-controls">
+            <button id="addPhotosBtn" class="btn">Add photos</button>
+            <input id="photoInput" type="file" accept="image/*" multiple style="display:none">
           </div>
-          <div class="polaroid" tabindex="0">
-            <div class="tape"></div>
-            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=222" alt="polaroid 2">
-            <div class="caption">Sunset walk</div>
-          </div>
-          <div class="polaroid" tabindex="0">
-            <div class="tape"></div>
-            <img src="https://images.unsplash.com/photo-1514388611171-3b0fd40c2f3d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=333" alt="polaroid 3">
-            <div class="caption">Sweet moments</div>
-          </div>
-          <div class="polaroid" tabindex="0">
-            <div class="tape"></div>
-            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=444" alt="polaroid 4">
-            <div class="caption">Forever us</div>
-          </div>
+
+          <div id="galleryGrid" style="display:flex;flex-wrap:wrap;gap:12px"></div>
+
+          <p style="text-align:center;color:var(--muted);margin-top:8px">No gallery photos yet — click “Add photos” to preview images locally. To make them permanent, upload files to the repo's <code>images/</code> folder and tell me the filenames.</p>
         </section>
 
         <section class="envelope-wrap">
@@ -221,13 +211,44 @@
         tick();
       })();
 
-      // Polaroid tilt
-      document.querySelectorAll('.polaroid').forEach(el=>{
+      // Polaroid creation & tilt helper
+      function makePolaroid(src, caption){
+        const wrapper = document.createElement('div');
+        wrapper.className = 'polaroid';
+        wrapper.tabIndex = 0;
+        const tape = document.createElement('div'); tape.className = 'tape';
+        const img = document.createElement('img'); img.src = src; img.alt = caption || 'photo';
+        const cap = document.createElement('div'); cap.className = 'caption'; cap.textContent = caption || '';
+        wrapper.appendChild(tape);
+        wrapper.appendChild(img);
+        wrapper.appendChild(cap);
+        applyTilt(wrapper);
+        return wrapper;
+      }
+
+      function applyTilt(el){
         el.addEventListener('pointermove', e=>{
           const r = el.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=e.clientX-cx, dy=e.clientY-cy;
           el.style.transform = `translateY(-6px) rotateX(${(-dy/12)}deg) rotateY(${(dx/12)}deg)`;
         });
         el.addEventListener('pointerleave', ()=>el.style.transform='translateY(-6px) rotateX(0deg) rotateY(0deg)');
+      }
+
+      // Add photos (local preview only) — user can upload to repo to make permanent
+      const addBtn = document.getElementById('addPhotosBtn');
+      const input = document.getElementById('photoInput');
+      const grid = document.getElementById('galleryGrid');
+      addBtn && addBtn.addEventListener('click', ()=> input.click());
+      input && input.addEventListener('change', (e)=>{
+        const files = Array.from(e.target.files || []);
+        files.forEach(f=>{
+          const reader = new FileReader();
+          reader.onload = ev => {
+            const p = makePolaroid(ev.target.result, 'Your photo');
+            grid.appendChild(p);
+          };
+          reader.readAsDataURL(f);
+        });
       });
 
       // Envelope flip
