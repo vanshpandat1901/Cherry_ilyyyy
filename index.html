@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Girlfriend Day, Cherry! 🍒</title>
+    <meta name="description" content="A little surprise page for Cherry from Vansh — polaroids, confetti, envelope, and cute interactions." />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Sacramento&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --bg:#fff6fb;
+        --panel:#fff;
+        --muted:#a88a9b;
+        --accent:#ff6b9a;
+        --accent-2:#ff9fb7;
+        --shadow: 0 12px 40px rgba(16,12,20,0.08);
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;}
+      body{
+        margin:0;
+        font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial;
+        background: radial-gradient(circle at 10% 10%, #fff2f8 0%, var(--bg) 40%, #fffaf7 100%);
+        color:#222;
+        -webkit-font-smoothing:antialiased;
+        -moz-osx-font-smoothing:grayscale;
+        display:flex;
+        justify-content:center;
+        padding:20px;
+      }
+      .wrap{width:100%;max-width:980px}
+      header{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+      .logo{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#fff;font-size:28px;box-shadow:var(--shadow)}
+      h1{font-family:'Sacramento',cursive;margin:0;font-size:2.15rem;color:#8a2b56}
+      .subtitle{margin-top:4px;color:#5a4050;font-weight:600;font-size:1rem}
+
+      /* background particle canvas */
+      canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+      main.card{position:relative;z-index:2;background:linear-gradient(180deg,var(--panel),#fffefc);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+
+      .hero{display:flex;flex-direction:column;padding:12px;border-radius:10px}
+      .dear{font-family:'Sacramento',cursive;font-size:1.4rem;color:#8a3560;margin-bottom:6px}
+      .typed{font-size:1rem;color:#4b3442;min-height:56px}
+
+      /* gallery */
+      .gallery{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+      .polaroid{width:calc(50% - 6px);background:var(--panel);padding:10px;border-radius:10px;box-shadow:0 10px 30px rgba(12,8,12,0.06);transform-origin:center;transition:transform .18s ease;position:relative}
+      .polaroid img{width:100%;display:block;border-radius:6px}
+      .caption{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:8px}
+      .polaroid .tape{position:absolute;left:50%;transform:translateX(-50%);top:-8px;width:56px;height:14px;background:linear-gradient(90deg,#fff1f6,#ffeef2);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+
+      @media(min-width:720px){.polaroid{width:calc(25% - 9px)}}
+
+      /* 3D tilt
+      */
+      .polaroid{will-change:transform}
+
+      /* envelope */
+      .envelope-wrap{margin-top:18px;display:flex;justify-content:center}
+      .envelope{width:280px;height:170px;perspective:900px}
+      .envelope .inner{width:100%;height:100%;position:relative;border-radius:12px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.9,.3,1)}
+      .flap{position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(180deg,#ffeef6,#ffdfe8);border-top-left-radius:12px;border-top-right-radius:12px;transform-origin:top center;backface-visibility:hidden}
+      .body{position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(180deg,#fff,#fff8fb);border-bottom-left-radius:12px;border-bottom-right-radius:12px;display:flex;align-items:center;justify-content:center;padding:12px}
+      .envelope.open .inner{transform:rotateX(18deg)}
+      .envelope.open .flap{transform:rotateX(180deg)}
+      .note{font-family:'Sacramento',cursive;font-size:1.05rem;padding:10px;background:linear-gradient(180deg,#fff,#fffefc);border-radius:8px;box-shadow:0 8px 20px rgba(12,8,12,0.06)}
+
+      /* question */
+      .ask{margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff7fb,#fff1f6);text-align:center}
+      .ask h3{margin:0 0 10px;font-size:1.05rem}
+      .controls{display:flex;gap:12px;justify-content:center}
+      .btn{padding:12px 18px;border-radius:999px;border:none;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(12,8,12,0.06)}
+      .yes{background:linear-gradient(180deg,#ff8db3,#ff5f8d);color:white}
+      .no{background:#fff;border:2px solid #ffdce6;color:#7a4b5d;position:relative}
+
+      /* modal */
+      .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
+      .modal.show{opacity:1;pointer-events:auto}
+      .modal .panel{background:var(--panel);padding:18px;border-radius:14px;max-width:92%;text-align:center;box-shadow:var(--shadow)}
+
+      footer{margin-top:14px;color:var(--muted);font-size:0.9rem;text-align:center}
+    </style>
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <div class="wrap">
+      <header>
+        <div class="logo">🍒</div>
+        <div>
+          <h1>Happy Girlfriend Day, Cherry! 🍒</h1>
+          <div class="subtitle">You make my everyday special. Out of everyone in the world, you’re my absolute favorite person! — Vansh</div>
+        </div>
+      </header>
+
+      <main class="card" role="main">
+        <section class="hero">
+          <div class="dear">Dear Cherry,</div>
+          <div id="typed" class="typed" aria-live="polite"></div>
+        </section>
+
+        <section class="gallery" aria-label="Polaroid gallery">
+          <div class="polaroid" tabindex="0">
+            <div class="tape"></div>
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=111" alt="polaroid 1">
+            <div class="caption">Our first coffee</div>
+          </div>
+          <div class="polaroid" tabindex="0">
+            <div class="tape"></div>
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=222" alt="polaroid 2">
+            <div class="caption">Sunset walk</div>
+          </div>
+          <div class="polaroid" tabindex="0">
+            <div class="tape"></div>
+            <img src="https://images.unsplash.com/photo-1514388611171-3b0fd40c2f3d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=333" alt="polaroid 3">
+            <div class="caption">Sweet moments</div>
+          </div>
+          <div class="polaroid" tabindex="0">
+            <div class="tape"></div>
+            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=444" alt="polaroid 4">
+            <div class="caption">Forever us</div>
+          </div>
+        </section>
+
+        <section class="envelope-wrap">
+          <div class="envelope" id="envelope" role="button" aria-pressed="false" tabindex="0">
+            <div class="inner">
+              <div class="flap"></div>
+              <div class="body"><div class="note">Open me, Cherry — love, Vansh 💌</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="ask">
+          <h3>Will you stay as my cherry forever? 🥺</h3>
+          <div class="controls">
+            <button id="yesBtn" class="btn yes">YES!</button>
+            <button id="noBtn" class="btn no">No</button>
+          </div>
+        </section>
+
+      </main>
+
+      <footer>Made with ❤️ by Vansh — built for Cherry</footer>
+    </div>
+
+    <div id="modal" class="modal" role="dialog" aria-hidden="true">
+      <div class="panel">
+        <h2>Yay! Best decision ever! 🤗💖</h2>
+        <p>Sending you endless hugs and cherry kisses 🍒</p>
+        <button id="closeModal" class="btn" style="margin-top:12px;background:#fff;border:2px solid #ffdce6;color:#7a4b5d">Close</button>
+      </div>
+    </div>
+
+    <canvas id="confetti" style="position:fixed;inset:0;pointer-events:none;z-index:70"></canvas>
+
+    <script>
+      // Typewriter
+      const heroText = "You make my everyday special. Out of everyone in the world, you’re my absolute favorite person! I love you — Vansh. 💖";
+      function typeWriter(el, str, speed=28){
+        el.textContent = '';
+        let i=0;
+        return new Promise(resolve=>{
+          const iv = setInterval(()=>{
+            el.textContent += str[i++] || '';
+            if(i>str.length){clearInterval(iv);resolve();}
+          }, speed);
+        });
+      }
+
+      // Background floating particles (emoji)
+      (function bg(){
+        const c = document.getElementById('bg'); if(!c) return; const ctx = c.getContext('2d');
+        let items=[]; function resize(){c.width=innerWidth;c.height=innerHeight}
+        resize(); window.addEventListener('resize', resize);
+        const icons=['🍒','💖','✨'];
+        for(let i=0;i<28;i++){items.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vy:0.2+Math.random()*0.6,icon:icons[Math.floor(Math.random()*icons.length)],size:12+Math.random()*20})}
+        function tick(){ctx.clearRect(0,0,c.width,c.height);items.forEach(it=>{it.y+=it.vy;it.x+=Math.sin(it.y*0.01)*0.6;ctx.font=it.size+'px serif';ctx.fillText(it.icon,it.x,it.y);if(it.y>c.height+20){it.y=-20;it.x=Math.random()*c.width}});requestAnimationFrame(tick)}
+        tick();
+      })();
+
+      // Polaroid tilt
+      document.querySelectorAll('.polaroid').forEach(el=>{
+        el.addEventListener('pointermove', e=>{
+          const r = el.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=e.clientX-cx, dy=e.clientY-cy;
+          el.style.transform = `translateY(-6px) rotateX(${(-dy/12)}deg) rotateY(${(dx/12)}deg)`;
+        });
+        el.addEventListener('pointerleave', ()=>el.style.transform='translateY(-6px) rotateX(0deg) rotateY(0deg)');
+      });
+
+      // Envelope flip
+      const envelope = document.getElementById('envelope');
+      if(envelope){
+        envelope.addEventListener('click', ()=>{envelope.classList.toggle('open');envelope.setAttribute('aria-pressed',envelope.classList.contains('open'))});
+        envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' ') envelope.click()});
+      }
+
+      // No button dodge
+      (function(){
+        const no = document.getElementById('noBtn'); const container = document.querySelector('.ask'); if(!no) return;
+        function moveAway(){
+          const rect = container.getBoundingClientRect(); const nx = Math.random()*(rect.width-80)+rect.left; const ny = Math.random()*(rect.height-40)+rect.top;
+          no.style.transform = `translate(${nx - no.getBoundingClientRect().left}px, ${ny - no.getBoundingClientRect().top}px)`; 
+        }
+        no.addEventListener('mouseenter', moveAway); no.addEventListener('touchstart', moveAway);
+      })();
+
+      // Confetti hearts
+      (function(){
+        const c = document.getElementById('confetti'); if(!c) return; const ctx=c.getContext('2d'); let parts=[]; let raf=null;
+        function resize(){c.width=innerWidth;c.height=innerHeight} resize(); window.addEventListener('resize', resize);
+        function spawn(x,y,count=80){for(let i=0;i<count;i++){parts.push({x,y,vx:(Math.random()-0.5)*6,vy:(Math.random()-1.5)*8,life:80+Math.random()*60,rot:Math.random()*360,vr:(Math.random()-0.5)*12,color:['#ff6b9a','#ffd1e0','#ff9fb7'][Math.floor(Math.random()*3)],s:6+Math.random()*9})} if(!raf) tick()}
+        function drawHeart(cx,cy,size,fill){ctx.save();ctx.beginPath();const topY=cy-size/3;ctx.moveTo(cx,topY);ctx.bezierCurveTo(cx+size,topY-size/2,cx+size*1.1,cy+size/3,cx,cy+size);ctx.bezierCurveTo(cx-size*1.1,cy+size/3,cx-size,topY-size/2,cx,topY);ctx.fillStyle=fill;ctx.fill();ctx.restore()}
+        function tick(){raf=requestAnimationFrame(tick);ctx.clearRect(0,0,c.width,c.height);for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.vy+=0.25;p.x+=p.vx;p.y+=p.vy;p.life--;drawHeart(p.x,p.y,p.s,p.color);if(p.life<=0||p.y>c.height+40)parts.splice(i,1);} if(parts.length===0){cancelAnimationFrame(raf);raf=null}}
+        window.spawnHearts = spawn;
+      })();
+
+      // Modal + yes button
+      const yes = document.getElementById('yesBtn'); const modal = document.getElementById('modal'); const close = document.getElementById('closeModal');
+      if(yes){yes.addEventListener('click', ()=>{modal.classList.add('show');modal.setAttribute('aria-hidden','false'); const cx=innerWidth/2, cy=innerHeight/3; window.spawnHearts && window.spawnHearts(cx,cy,110)})}
+      if(close){close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true')})}
+
+      // start typewriter
+      window.addEventListener('DOMContentLoaded', async ()=>{const el=document.getElementById('typed'); await typeWriter(el, heroText, 28)});
+    </script>
+  </body>
+</html>
