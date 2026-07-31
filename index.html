@@ -76,22 +76,16 @@
       .dear{font-family:'Sacramento',cursive;font-size:1.4rem;color:#8a3560;margin-bottom:6px}
       .typed{font-size:1rem;color:#4b3442;min-height:56px}
 
-      /* gallery */
-      .gallery{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
-      .polaroid{width:calc(50% - 6px);background:var(--panel);padding:10px;border-radius:10px;box-shadow:0 10px 30px rgba(12,8,12,0.06);transform-origin:center;transition:transform .18s ease;position:relative}
+      /* polaroid gallery (used in modal after envelope opens) */
+      .gallery-modal-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+      .polaroid{width:220px;background:var(--panel);padding:10px;border-radius:10px;box-shadow:0 12px 30px rgba(12,8,12,0.08);transform-origin:center;transition:transform .18s ease;position:relative}
       .polaroid img{width:100%;display:block;border-radius:6px}
-      .caption{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:8px}
-      .polaroid .tape{position:absolute;left:50%;transform:translateX(-50%);top:-8px;width:56px;height:14px;background:linear-gradient(90deg,#fff1f6,#ffeef2);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
-      .gallery-controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:8px}
-
-      @media(min-width:720px){.polaroid{width:calc(25% - 9px)}}
-
-      /* 3D tilt */
-      .polaroid{will-change:transform}
+      .caption{font-size:0.9rem;color:var(--muted);text-align:center;margin-top:8px}
+      .polaroid .tape{position:absolute;left:50%;transform:translateX(-50%);top:-8px;width:56px;height:14px;background:linear-gradient(90deg,#fff1f6,#ffeef2);border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
 
       /* envelope */
       .envelope-wrap{margin-top:18px;display:flex;justify-content:center}
-      .envelope{width:280px;height:170px;perspective:900px}
+      .envelope{width:280px;height:170px;perspective:900px;cursor:pointer}
       .envelope .inner{width:100%;height:100%;position:relative;border-radius:12px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.9,.3,1)}
       .flap{position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(180deg,#ffeef6,#ffdfe8);border-top-left-radius:12px;border-top-right-radius:12px;transform-origin:top center;backface-visibility:hidden}
       .body{position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(180deg,#fff,#fff8fb);border-bottom-left-radius:12px;border-bottom-right-radius:12px;display:flex;align-items:center;justify-content:center;padding:12px}
@@ -109,15 +103,15 @@
       /* modal */
       .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
       .modal.show{opacity:1;pointer-events:auto}
-      .modal .panel{background:var(--panel);padding:18px;border-radius:14px;max-width:92%;text-align:center;box-shadow:var(--shadow)}
+      .modal .panel{background:var(--panel);padding:18px;border-radius:14px;max-width:92%;text-align:center;box-shadow:var(--shadow);max-height:86vh;overflow:auto}
 
       footer{margin-top:14px;color:var(--muted);font-size:0.9rem;text-align:center}
 
-      /* small screens: make cover taller and adjust padding */
+      /* responsive tweaks */
       @media (max-width:480px){
         .cover{height:44vh;min-height:220px}
         .cover h1{font-size:1.7rem}
-        .polaroid{width:100%}
+        .polaroid{width:46%;min-width:140px}
       }
     </style>
   </head>
@@ -143,16 +137,7 @@
           <div id="typed" class="typed" aria-live="polite"></div>
         </section>
 
-        <section class="gallery" aria-label="Polaroid gallery">
-          <div class="gallery-controls">
-            <button id="addPhotosBtn" class="btn">Add photos</button>
-            <input id="photoInput" type="file" accept="image/*" multiple style="display:none">
-          </div>
-
-          <div id="galleryGrid" style="display:flex;flex-wrap:wrap;gap:12px"></div>
-
-          <p style="text-align:center;color:var(--muted);margin-top:8px">No gallery photos yet — click “Add photos” to preview images locally. To make them permanent, upload files to the repo's <code>images/</code> folder and tell me the filenames.</p>
-        </section>
+        <!-- Polaroid gallery removed from main view; gallery will pop up when envelope opens -->
 
         <section class="envelope-wrap">
           <div class="envelope" id="envelope" role="button" aria-pressed="false" tabindex="0">
@@ -176,11 +161,15 @@
       <footer>Made with ❤️ by Vansh — built for Cherry</footer>
     </div>
 
+    <!-- Modal: used for celebration and also reused for the envelope gallery -->
     <div id="modal" class="modal" role="dialog" aria-hidden="true">
-      <div class="panel">
-        <h2>Yay! Best decision ever! 🤗💖</h2>
-        <p>Sending you endless hugs and cherry kisses 🍒</p>
-        <button id="closeModal" class="btn" style="margin-top:12px;background:#fff;border:2px solid #ffdce6;color:#7a4b5d">Close</button>
+      <div class="panel" id="modalPanel">
+        <button id="closeModal" class="btn" style="float:right;background:#fff;border:2px solid #ffdce6;color:#7a4b5d">Close</button>
+        <div id="modalContent">
+          <h2 id="modalTitle">Yay! Best decision ever! 🤗💖</h2>
+          <p id="modalText">Sending you endless hugs and cherry kisses 🍒</p>
+          <div id="modalGallery" class="gallery-modal-grid" style="margin-top:12px"></div>
+        </div>
       </div>
     </div>
 
@@ -211,21 +200,7 @@
         tick();
       })();
 
-      // Polaroid creation & tilt helper
-      function makePolaroid(src, caption){
-        const wrapper = document.createElement('div');
-        wrapper.className = 'polaroid';
-        wrapper.tabIndex = 0;
-        const tape = document.createElement('div'); tape.className = 'tape';
-        const img = document.createElement('img'); img.src = src; img.alt = caption || 'photo';
-        const cap = document.createElement('div'); cap.className = 'caption'; cap.textContent = caption || '';
-        wrapper.appendChild(tape);
-        wrapper.appendChild(img);
-        wrapper.appendChild(cap);
-        applyTilt(wrapper);
-        return wrapper;
-      }
-
+      // Polaroid tilt helper
       function applyTilt(el){
         el.addEventListener('pointermove', e=>{
           const r = el.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=e.clientX-cx, dy=e.clientY-cy;
@@ -234,31 +209,75 @@
         el.addEventListener('pointerleave', ()=>el.style.transform='translateY(-6px) rotateX(0deg) rotateY(0deg)');
       }
 
-      // Add photos (local preview only) — user can upload to repo to make permanent
-      const addBtn = document.getElementById('addPhotosBtn');
-      const input = document.getElementById('photoInput');
-      const grid = document.getElementById('galleryGrid');
-      addBtn && addBtn.addEventListener('click', ()=> input.click());
-      input && input.addEventListener('change', (e)=>{
-        const files = Array.from(e.target.files || []);
-        files.forEach(f=>{
-          const reader = new FileReader();
-          reader.onload = ev => {
-            const p = makePolaroid(ev.target.result, 'Your photo');
-            grid.appendChild(p);
-          };
-          reader.readAsDataURL(f);
-        });
-      });
+      function makePolaroidElement(src, caption){
+        const wrapper = document.createElement('div');
+        wrapper.className = 'polaroid';
+        const tape = document.createElement('div'); tape.className = 'tape';
+        const img = document.createElement('img'); img.src = src; img.alt = caption || 'photo';
+        const cap = document.createElement('div'); cap.className = 'caption'; cap.textContent = caption || '';
+        wrapper.appendChild(tape); wrapper.appendChild(img); wrapper.appendChild(cap);
+        applyTilt(wrapper);
+        return wrapper;
+      }
 
-      // Envelope flip
+      // When envelope opens: show modal with gallery (images uploaded to repo at images/photo1.jpg...photo6.jpg)
       const envelope = document.getElementById('envelope');
+      const modal = document.getElementById('modal');
+      const modalGallery = document.getElementById('modalGallery');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalText = document.getElementById('modalText');
+      const close = document.getElementById('closeModal');
+
+      const galleryFilenames = [
+        'images/photo1.jpg',
+        'images/photo2.jpg',
+        'images/photo3.jpg',
+        'images/photo4.jpg',
+        'images/photo5.jpg',
+        'images/photo6.jpg'
+      ];
+
+      function openModalAsGallery(){
+        // set title and text for the envelope reveal
+        modalTitle.textContent = 'A little surprise for you 💌';
+        modalText.textContent = "These are some of our moments — love, Vansh.";
+        modalGallery.innerHTML = '';
+        // Try to load each filename; only append if it successfully loads (so missing files are ignored)
+        galleryFilenames.forEach(fn=>{
+          const img = new Image();
+          img.onload = ()=>{
+            const p = makePolaroidElement(fn, '');
+            modalGallery.appendChild(p);
+          };
+          img.onerror = ()=>{
+            // missing file - ignore
+          };
+          img.src = fn;
+        });
+
+        modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+      }
+
       if(envelope){
-        envelope.addEventListener('click', ()=>{envelope.classList.toggle('open');envelope.setAttribute('aria-pressed',envelope.classList.contains('open'))});
+        envelope.addEventListener('click', ()=>{
+          envelope.classList.toggle('open');
+          envelope.setAttribute('aria-pressed', envelope.classList.contains('open'));
+          // after flap animation, open modal gallery
+          setTimeout(()=>{
+            openModalAsGallery();
+          }, 650);
+        });
         envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' ') envelope.click()});
       }
 
-      // Confetti hearts
+      if(close){
+        close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true');
+          // also close envelope flap when modal closed
+          envelope.classList.remove('open'); envelope.setAttribute('aria-pressed','false');
+        });
+      }
+
+      // Confetti hearts (same as before)
       (function(){
         const c = document.getElementById('confetti'); if(!c) return; const ctx=c.getContext('2d'); let parts=[]; let raf=null;
         function resize(){c.width=innerWidth;c.height=innerHeight} resize(); window.addEventListener('resize', resize);
@@ -268,19 +287,19 @@
         window.spawnHearts = spawn;
       })();
 
-      // Modal + yes buttons
+      // YES buttons behavior
       const yes = document.getElementById('yesBtn');
       const yes2 = document.getElementById('yesBtn2');
-      const modal = document.getElementById('modal');
-      const close = document.getElementById('closeModal');
       function openCelebration(){
-        modal.classList.add('show');
-        modal.setAttribute('aria-hidden','false');
+        // show celebration modal (reuse modal but change content)
+        modalTitle.textContent = 'Yay! Best decision ever! 🤗💖';
+        modalText.textContent = 'Sending you endless hugs and cherry kisses 🍒';
+        modalGallery.innerHTML = '';
+        modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
         const cx = innerWidth/2, cy = innerHeight/3; window.spawnHearts && window.spawnHearts(cx,cy,110);
       }
       if(yes){ yes.addEventListener('click', openCelebration); }
       if(yes2){ yes2.addEventListener('click', openCelebration); }
-      if(close){close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true')})}
 
       // start typewriter
       window.addEventListener('DOMContentLoaded', async ()=>{const el=document.getElementById('typed'); await typeWriter(el, heroText, 28)});
