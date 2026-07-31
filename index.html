@@ -30,68 +30,39 @@
       }
       .wrap{width:100%;max-width:980px}
 
-      /* COVER: framed image with border and overlay */
-      .cover{
-        position:relative;
-        border-radius:18px;
-        overflow:visible; /* frame will create the visible border */
-        height:48vh;
-        min-height:260px;
-        display:flex;
-        align-items:flex-end;
-        justify-content:flex-start;
-        margin-bottom:18px;
-      }
-      .cover-frame{
-        position:relative;
-        width:100%;
-        height:100%;
-        border-radius:16px;
-        overflow:hidden;
-        background:linear-gradient(180deg,#ffeef8,#fff6fb);
-        padding:10px; /* padding creates inner white paper border */
-        box-shadow: var(--shadow);
-      }
-      .cover-frame::before{
-        content: '';
-        position:absolute;inset:0;border-radius:14px;padding:0;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
-      }
-      .cover-img{
-        width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;filter:contrast(1.02) saturate(1.03);
-      }
+      /* COVER */
+      .cover{position:relative;border-radius:18px;overflow:visible;height:48vh;min-height:260px;display:flex;align-items:flex-end;justify-content:flex-start;margin-bottom:18px}
+      .cover-frame{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#ffeef8,#fff6fb);padding:10px;box-shadow: var(--shadow)}
+      .cover-frame::before{content: '';position:absolute;inset:0;border-radius:14px;padding:0;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+      .cover-img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;filter:contrast(1.02) saturate(1.03)}
       .cover .overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(255,255,255,0.2));pointer-events:none}
       .cover .hero-text{position:relative;z-index:5;padding:20px;color:#4b2030}
       .cover h1{font-family:'Sacramento',cursive;margin:0;font-size:2.2rem;color:#8a2b56;text-shadow:0 2px 6px rgba(255,255,255,0.6)}
       .cover p{margin:6px 0 0;color:#5a4050;font-weight:600}
 
-      header{display:flex;gap:14px;align-items:center;margin-bottom:8px}
-      .logo{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#fff;font-size:28px;box-shadow:var(--shadow)}
-
-      /* background particle canvas */
-      canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-
       main.card{position:relative;z-index:2;background:linear-gradient(180deg,var(--panel),#fffefc);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(12,8,12,0.04)}
-
       .hero{display:flex;flex-direction:column;padding:12px;border-radius:10px}
       .dear{font-family:'Sacramento',cursive;font-size:1.4rem;color:#8a3560;margin-bottom:6px}
       .typed{font-size:1rem;color:#4b3442;min-height:56px}
 
-      /* polaroid gallery (used in modal after envelope opens) */
+      /* envelope (SVG) */
+      .envelope-wrap{margin-top:18px;display:flex;justify-content:center}
+      .envelope{width:320px;height:200px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;cursor:pointer}
+      .env-inner{width:240px;height:140px;perspective:900px}
+      .env-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.9,.3,1)}
+      .env-front,.env-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
+      .env-front{background:linear-gradient(180deg,#fff,#fff8fb);box-shadow:0 12px 30px rgba(12,8,12,0.06)}
+      .env-back{transform:rotateX(180deg);background:linear-gradient(180deg,#ffeef6,#ffdfe8);box-shadow:inset 0 -6px 18px rgba(0,0,0,0.03)}
+      .env-flap{position:absolute;left:0;right:0;top:-28%;height:60%;transform-origin:top center;border-top-left-radius:12px;border-top-right-radius:12px;background:linear-gradient(180deg,#ffdfe8,#fff);box-shadow:0 10px 30px rgba(12,8,12,0.06)}
+      .envelope.open .env-card{transform:rotateX(18deg)}
+      .envelope.open .env-flap{transform:rotateX(180deg)}
+
+      /* polaroid gallery (modal) */
       .gallery-modal-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
       .polaroid{width:220px;background:var(--panel);padding:10px;border-radius:10px;box-shadow:0 12px 30px rgba(12,8,12,0.08);transform-origin:center;transition:transform .18s ease;position:relative}
       .polaroid img{width:100%;display:block;border-radius:6px}
       .caption{font-size:0.9rem;color:var(--muted);text-align:center;margin-top:8px}
       .polaroid .tape{position:absolute;left:50%;transform:translateX(-50%);top:-8px;width:56px;height:14px;background:linear-gradient(90deg,#fff1f6,#ffeef2);border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-
-      /* envelope */
-      .envelope-wrap{margin-top:18px;display:flex;justify-content:center}
-      .envelope{width:280px;height:170px;perspective:900px;cursor:pointer}
-      .envelope .inner{width:100%;height:100%;position:relative;border-radius:12px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.9,.3,1)}
-      .flap{position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(180deg,#ffeef6,#ffdfe8);border-top-left-radius:12px;border-top-right-radius:12px;transform-origin:top center;backface-visibility:hidden}
-      .body{position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(180deg,#fff,#fff8fb);border-bottom-left-radius:12px;border-bottom-right-radius:12px;display:flex;align-items:center;justify-content:center;padding:12px}
-      .envelope.open .inner{transform:rotateX(18deg)}
-      .envelope.open .flap{transform:rotateX(180deg)}
-      .note{font-family:'Sacramento',cursive;font-size:1.05rem;padding:10px;background:linear-gradient(180deg,#fff,#fffefc);border-radius:8px;box-shadow:0 8px 20px rgba(12,8,12,0.06)}
 
       /* question */
       .ask{margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff7fb,#fff1f6);text-align:center}
@@ -104,25 +75,21 @@
       .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
       .modal.show{opacity:1;pointer-events:auto}
       .modal .panel{background:var(--panel);padding:18px;border-radius:14px;max-width:92%;text-align:center;box-shadow:var(--shadow);max-height:86vh;overflow:auto}
+      .no-photos{color:var(--muted);font-size:0.95rem;margin:12px 0}
 
       footer{margin-top:14px;color:var(--muted);font-size:0.9rem;text-align:center}
 
-      /* responsive tweaks */
-      @media (max-width:480px){
-        .cover{height:44vh;min-height:220px}
-        .cover h1{font-size:1.7rem}
-        .polaroid{width:46%;min-width:140px}
-      }
+      @media (max-width:480px){.cover{height:44vh;min-height:220px}.cover h1{font-size:1.7rem}.polaroid{width:46%;min-width:140px}}
     </style>
   </head>
   <body>
     <canvas id="bg"></canvas>
     <div class="wrap">
 
-      <!-- COVER: framed image with border. Uploaded image path: images/cover.jpg -->
+      <!-- COVER -->
       <div class="cover" id="cover">
         <div class="cover-frame">
-          <img class="cover-img" src="images/cover.jpg" alt="Cover photo">
+          <img class="cover-img" id="coverImg" src="https://raw.githubusercontent.com/vanshpandat1901/Cherry_ilyyyy/main/images/cover.jpg" alt="Cover photo">
         </div>
         <div class="overlay"></div>
         <div class="hero-text">
@@ -137,15 +104,17 @@
           <div id="typed" class="typed" aria-live="polite"></div>
         </section>
 
-        <!-- Polaroid gallery removed from main view; gallery will pop up when envelope opens -->
-
+        <!-- envelope -->
         <section class="envelope-wrap">
-          <div class="envelope" id="envelope" role="button" aria-pressed="false" tabindex="0">
-            <div class="inner">
-              <div class="flap"></div>
-              <div class="body"><div class="note">Open me, Cherry — love, Vansh 💌</div></div>
+          <button id="envelope" class="envelope" aria-pressed="false" title="Open the letter">
+            <div class="env-inner">
+              <div class="env-card">
+                <div class="env-back"></div>
+                <div class="env-front"> <div style="pointer-events:none">💌</div></div>
+                <div class="env-flap"></div>
+              </div>
             </div>
-          </div>
+          </button>
         </section>
 
         <section class="ask">
@@ -161,7 +130,7 @@
       <footer>Made with ❤️ by Vansh — built for Cherry</footer>
     </div>
 
-    <!-- Modal: used for celebration and also reused for the envelope gallery -->
+    <!-- Modal: celebration and gallery -->
     <div id="modal" class="modal" role="dialog" aria-hidden="true">
       <div class="panel" id="modalPanel">
         <button id="closeModal" class="btn" style="float:right;background:#fff;border:2px solid #ffdce6;color:#7a4b5d">Close</button>
@@ -169,6 +138,7 @@
           <h2 id="modalTitle">Yay! Best decision ever! 🤗💖</h2>
           <p id="modalText">Sending you endless hugs and cherry kisses 🍒</p>
           <div id="modalGallery" class="gallery-modal-grid" style="margin-top:12px"></div>
+          <div id="modalFallback" class="no-photos" style="display:none">No photos found yet — try again later.</div>
         </div>
       </div>
     </div>
@@ -220,40 +190,53 @@
         return wrapper;
       }
 
-      // When envelope opens: show modal with gallery (images uploaded to repo at images/photo1.jpg...photo6.jpg)
+      // Gallery raw URLs (use absolute raw URLs to avoid relative path issues)
+      const rawBase = 'https://raw.githubusercontent.com/vanshpandat1901/Cherry_ilyyyy/main/';
+      const galleryFilenames = [
+        rawBase + 'images/photo1.jpg',
+        rawBase + 'images/photo2.jpg',
+        rawBase + 'images/photo3.jpg',
+        rawBase + 'images/photo4.jpg',
+        rawBase + 'images/photo5.jpg',
+        rawBase + 'images/photo6.jpg'
+      ];
+
+      // When envelope opens: show modal with gallery
       const envelope = document.getElementById('envelope');
       const modal = document.getElementById('modal');
       const modalGallery = document.getElementById('modalGallery');
       const modalTitle = document.getElementById('modalTitle');
       const modalText = document.getElementById('modalText');
+      const modalFallback = document.getElementById('modalFallback');
       const close = document.getElementById('closeModal');
 
-      const galleryFilenames = [
-        'images/photo1.jpg',
-        'images/photo2.jpg',
-        'images/photo3.jpg',
-        'images/photo4.jpg',
-        'images/photo5.jpg',
-        'images/photo6.jpg'
-      ];
-
       function openModalAsGallery(){
-        // set title and text for the envelope reveal
         modalTitle.textContent = 'A little surprise for you 💌';
         modalText.textContent = "These are some of our moments — love, Vansh.";
         modalGallery.innerHTML = '';
-        // Try to load each filename; only append if it successfully loads (so missing files are ignored)
+        modalFallback.style.display = 'none';
+
+        let appended = 0;
         galleryFilenames.forEach(fn=>{
           const img = new Image();
           img.onload = ()=>{
+            appended++;
             const p = makePolaroidElement(fn, '');
             modalGallery.appendChild(p);
           };
           img.onerror = ()=>{
-            // missing file - ignore
+            // ignore missing
           };
+          // Start loading
           img.src = fn;
         });
+
+        // After a short delay, if nothing appended, show fallback text
+        setTimeout(()=>{
+          if(modalGallery.children.length === 0){
+            modalFallback.style.display = 'block';
+          }
+        }, 900);
 
         modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
       }
@@ -262,22 +245,16 @@
         envelope.addEventListener('click', ()=>{
           envelope.classList.toggle('open');
           envelope.setAttribute('aria-pressed', envelope.classList.contains('open'));
-          // after flap animation, open modal gallery
-          setTimeout(()=>{
-            openModalAsGallery();
-          }, 650);
+          setTimeout(()=>{ openModalAsGallery(); }, 650);
         });
         envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' ') envelope.click()});
       }
 
       if(close){
-        close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true');
-          // also close envelope flap when modal closed
-          envelope.classList.remove('open'); envelope.setAttribute('aria-pressed','false');
-        });
+        close.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true');envelope.classList.remove('open');envelope.setAttribute('aria-pressed','false');});
       }
 
-      // Confetti hearts (same as before)
+      // Confetti hearts
       (function(){
         const c = document.getElementById('confetti'); if(!c) return; const ctx=c.getContext('2d'); let parts=[]; let raf=null;
         function resize(){c.width=innerWidth;c.height=innerHeight} resize(); window.addEventListener('resize', resize);
@@ -291,10 +268,10 @@
       const yes = document.getElementById('yesBtn');
       const yes2 = document.getElementById('yesBtn2');
       function openCelebration(){
-        // show celebration modal (reuse modal but change content)
         modalTitle.textContent = 'Yay! Best decision ever! 🤗💖';
         modalText.textContent = 'Sending you endless hugs and cherry kisses 🍒';
         modalGallery.innerHTML = '';
+        modalFallback.style.display = 'none';
         modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
         const cx = innerWidth/2, cy = innerHeight/3; window.spawnHearts && window.spawnHearts(cx,cy,110);
       }
